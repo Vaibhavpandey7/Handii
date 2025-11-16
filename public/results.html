@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Available Workers - Urban Services Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1), transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(240, 147, 251, 0.1), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header Section */
+    .header {
+      position: relative;
+      z-index: 10;
+      padding: 40px 20px 30px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 20px;
+      top: 40px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-btn:hover {
+      background: rgba(102, 126, 234, 0.3);
+      transform: translateX(-5px);
+      border-color: rgba(102, 126, 234, 0.5);
+    }
+
+    .back-btn i {
+      margin-right: 8px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: linear-gradient(120deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .search-info {
+      font-size: 1.1rem;
+      color: #aaa;
+      font-weight: 300;
+      margin-top: 10px;
+    }
+
+    .search-info span {
+      color: #8fd3f4;
+      font-weight: 600;
+    }
+
+    /* Filter Section */
+    .filters {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 16px 20px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-btn {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: rgba(102, 126, 234, 0.3);
+      border-color: rgba(102, 126, 234, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* Results Container */
+    .container {
+      position: relative;
+      z-index: 10;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    #results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    /* Worker Card */
+    .worker-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .worker-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .worker-card:hover::before {
+      opacity: 1;
+    }
+
+    .worker-card:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(102, 126, 234, 0.5);
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+    }
+
+    .worker-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .worker-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .worker-title h3 {
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .worker-service {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(143, 211, 244, 0.2);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: #8fd3f4;
+      font-weight: 500;
+    }
+
+    .worker-info {
+      margin: 20px 0;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(102, 126, 234, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8fd3f4;
+      flex-shrink: 0;
+    }
+
+    .info-content {
+      flex: 1;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: 400;
+    }
+
+    .info-value {
+      font-size: 1rem;
+      color: #fff;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stars {
+      color: #ffd700;
+      font-size: 1rem;
+    }
+
+    .rating-value {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .availability-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-top: 20px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .available {
+      background: rgba(28, 164, 28, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .unavailable {
+      background: rgba(230, 57, 70, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    .contact-btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .contact-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+    }
+
+    .contact-btn i {
+      margin-right: 8px;
+    }
+
+    /* Loading State */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      gap: 20px;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(102, 126, 234, 0.2);
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.2rem;
+      color: #aaa;
+      font-weight: 300;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .empty-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    .empty-title {
+      font-size: 2rem;
+      color: #fff;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .empty-text {
+      font-size: 1.1rem;
+      color: #888;
+      font-weight: 300;
+    }
+
+    /* Error State */
+    .error-state {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .error-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      color: #f87171;
+    }
+
+    .error-title {
+      font-size: 2rem;
+      color: #fff;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .error-text {
+      font-size: 1.1rem;
+      color: #888;
+      font-weight: 300;
+      margin-bottom: 30px;
+    }
+
+    .retry-btn {
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .retry-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .worker-card {
+      animation: fadeInUp 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .worker-card:nth-child(1) { animation-delay: 0.1s; }
+    .worker-card:nth-child(2) { animation-delay: 0.2s; }
+    .worker-card:nth-child(3) { animation-delay: 0.3s; }
+    .worker-card:nth-child(4) { animation-delay: 0.4s; }
+    .worker-card:nth-child(5) { animation-delay: 0.5s; }
+    .worker-card:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .back-btn {
+        position: static;
+        display: inline-block;
+        margin-bottom: 20px;
+      }
+
+      #results {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+
+  <div class="header">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <h1>Available Workers</h1>
+    <div class="search-info">
+      Showing results for <span id="serviceType">All Services</span> in <span id="locationArea">All Areas</span>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All Workers</button>
+    <button class="filter-btn" data-filter="available">Available Only</button>
+    <button class="filter-btn" data-filter="top-rated">Top Rated (4.5+)</button>
+    <button class="filter-btn" data-filter="experienced">Experienced (5+ years)</button>
+    <span style="flex:1"></span>
+    <select id="sort" class="filter-btn" style="cursor:pointer">
+      <option value="default">Sort</option>
+      <option value="rating-desc">Rating: High to Low</option>
+      <option value="experience-desc">Experience: High to Low</option>
+      <option value="name-asc">Name: A to Z</option>
+    </select>
+  </div>
+
+  <div class="container">
+    <div id="results">
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <div class="loading-text">Finding the best workers for you...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const service = urlParams.get("service");
+    const userLocation = urlParams.get("location");
+    const resultsContainer = document.getElementById("results");
+
+   // Update header info (use the query param value, not the global `location`)
+    if (service) document.getElementById("serviceType").textContent = service;
+    if (userLocation) document.getElementById("locationArea").textContent = userLocation;
+
+
+    let allWorkers = [];
+    let currentFilter = 'all';
+    let currentPage = 1;
+    const pageSize = 6;
+
+    // Filter functionality
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        currentPage = 1;
+        renderWorkers(paginate(sortWorkers(filterWorkers(allWorkers))));
+      });
+    });
+
+    document.getElementById('sort').addEventListener('change', () => {
+      currentPage = 1;
+      renderWorkers(paginate(sortWorkers(filterWorkers(allWorkers))));
+    });
+
+    function filterWorkers(workers) {
+      switch(currentFilter) {
+        case 'available':
+          return workers.filter(w => w.availability);
+        case 'top-rated':
+          return workers.filter(w => w.rating >= 4.5);
+        case 'experienced':
+          return workers.filter(w => w.experience >= 5);
+        default:
+          return workers;
+      }
+    }
+
+    function sortWorkers(workers) {
+      const sort = document.getElementById('sort').value;
+      const sorted = [...workers];
+      if (sort === 'rating-desc') sorted.sort((a,b) => (b.rating||0) - (a.rating||0));
+      if (sort === 'experience-desc') sorted.sort((a,b) => (b.experience||0) - (a.experience||0));
+      if (sort === 'name-asc') sorted.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+      return sorted;
+    }
+
+    function paginate(workers) {
+      const start = (currentPage - 1) * pageSize;
+      return workers.slice( start, start + pageSize );
+    }
+
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    function generateStars(rating) {
+      const fullStars = Math.floor(rating);
+      const hasHalf = rating % 1 >= 0.5;
+      let stars = '';
+      
+      for(let i = 0; i < fullStars; i++) {
+        stars += '★';
+      }
+      if(hasHalf) stars += '½';
+      
+      return stars || '☆☆☆☆☆';
+    }
+
+    function renderWorkerCard(worker) {
+      return `
+        <div class="worker-card">
+          <div class="worker-header">
+            <div class="worker-avatar">${getInitials(worker.name)}</div>
+            <div class="worker-title">
+              <h3>${worker.name}</h3>
+              <span class="worker-service">${worker.service_type || "General"}</span>
+            </div>
+          </div>
+
+          <div class="worker-info">
+            <div class="info-row">
+              <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+              <div class="info-content">
+                <div class="info-label">Location</div>
+                <div class="info-value">${worker.location || "Not specified"}</div>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <div class="info-icon"><i class="fas fa-briefcase"></i></div>
+              <div class="info-content">
+                <div class="info-label">Experience</div>
+                <div class="info-value">${worker.experience || 0} years</div>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <div class="info-icon"><i class="fas fa-star"></i></div>
+              <div class="info-content">
+                <div class="info-label">Rating</div>
+                <div class="rating">
+                  <span class="stars">${generateStars(worker.rating || 0)}</span>
+                  <span class="rating-value">${(worker.rating || 0).toFixed(1)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <div class="info-icon"><i class="fas fa-phone"></i></div>
+              <div class="info-content">
+                <div class="info-label">Contact</div>
+                <div class="info-value">${worker.phone || "Not available"}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="availability-badge ${worker.availability ? 'available' : 'unavailable'}">
+            <i class="fas fa-circle"></i>
+            ${worker.availability ? 'Available Now' : 'Currently Busy'}
+          </div>
+
+          <button class="contact-btn" onclick="contactWorker('${worker.phone || ''}', '${worker.name}')">
+            <i class="fas fa-phone-alt"></i> Contact ${worker.name.split(' ')[0]}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderWorkers(workers) {
+      if (!workers || workers.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">No Workers Found</div>
+            <div class="empty-text">Try adjusting your filters or search criteria</div>
+          </div>
+        `;
+        return;
+      }
+
+      resultsContainer.innerHTML = workers.map(renderWorkerCard).join("");
+
+      const total = sortWorkers(filterWorkers(allWorkers)).length;
+      const hasMore = currentPage * pageSize < total;
+      resultsContainer.insertAdjacentHTML('beforeend', `
+        ${hasMore ? '<div style="grid-column: 1 / -1; display:flex; justify-content:center;">\
+          <button id="loadMore" class="contact-btn" style="max-width:300px">Load more</button>\
+        </div>' : ''}
+      `);
+
+      const loadMore = document.getElementById('loadMore');
+      if (loadMore) {
+        loadMore.addEventListener('click', () => {
+          currentPage += 1;
+          const all = sortWorkers(filterWorkers(allWorkers));
+          const start = (currentPage - 1) * pageSize;
+          const next = all.slice(start, start + pageSize);
+          const html = next.map(renderWorkerCard).join('');
+          loadMore.parentElement.insertAdjacentHTML('beforebegin', html);
+          if (currentPage * pageSize >= total) loadMore.parentElement.remove();
+        });
+      }
+    }
+
+    function contactWorker(phone, name) {
+      if (phone && phone !== 'Not available') {
+        window.location.href = `tel:${phone}`;
+      } else {
+        alert(`Contact information not available for ${name}`);
+      }
+    }
+
+    async function fetchWorkers() {
+      try {
+        const response = await fetch(
+          `  /api/workers?service=${encodeURIComponent(service || "")}&location=${encodeURIComponent(userLocation || "")}`
+        );
+
+
+        if (!response.ok) throw new Error("Server error");
+
+        const data = await response.json();
+        allWorkers = data;
+        currentPage = 1;
+        renderWorkers(paginate(sortWorkers(filterWorkers(data))));
+
+      } catch (error) {
+        console.error(error);
+        resultsContainer.innerHTML = `
+          <div class="error-state">
+            <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="error-title">Oops! Something went wrong</div>
+            <div class="error-text">We couldn't load the workers. Please check your connection and try again.</div>
+            <button class="retry-btn" onclick="fetchWorkers()">
+              <i class="fas fa-redo"></i> Try Again
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    fetchWorkers();
+  </script>
+</body>
+</html>
