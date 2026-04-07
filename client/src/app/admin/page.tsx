@@ -34,6 +34,16 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to remove this worker?")) return;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admin/workers/${id}`, { method: "DELETE" });
+      fetchWorkers();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black p-6 md:p-12 font-sans overflow-hidden relative">
       {/* Background Ambience */}
@@ -90,15 +100,21 @@ export default function AdminDashboard() {
                         </span>
                       )}
                     </td>
-                    <td className="p-6 text-right">
+                    <td className="p-6 text-right space-x-2">
                       {!worker.verified && (
                         <button 
                           onClick={() => handleVerify(worker._id)}
                           className="bg-zinc-800/30 hover:bg-orange-500 hover:text-black border border-zinc-700 hover:border-transparent text-zinc-300 font-bold py-2.5 px-6 rounded-xl text-sm transition-all shadow-[0_0_10px_rgba(249,115,22,0)] hover:shadow-[0_0_15px_rgba(249,115,22,0.4)] group-hover:bg-orange-500/10"
                         >
-                          Verify Worker
+                          Verify Waitlist
                         </button>
                       )}
+                      <button 
+                        onClick={() => handleDelete(worker._id)}
+                        className="bg-zinc-800/30 hover:bg-red-500 hover:text-white border border-zinc-700 hover:border-transparent text-zinc-400 font-bold py-2.5 px-4 rounded-xl text-sm transition-all shadow-[0_0_10px_rgba(239,68,68,0)] hover:shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:bg-red-500/10"
+                      >
+                        Remove
+                      </button>
                     </td>
                   </tr>
                 ))}

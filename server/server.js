@@ -74,6 +74,18 @@ app.patch("/api/admin/workers/:id/verify", async (req, res) => {
   }
 });
 
+// Admin: Delete a worker
+app.delete("/api/admin/workers/:id", async (req, res) => {
+  try {
+    const worker = await Worker.findByIdAndDelete(req.params.id);
+    if (!worker) return res.status(404).json({ error: "Worker not found" });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Create a new Booking
 app.post("/api/bookings", async (req, res) => {
   try {
