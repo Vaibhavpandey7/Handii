@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js",
-    "seed": "node seed.js"
+    "start": "node server/server.js",
+    "seed": "node server/seed.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
