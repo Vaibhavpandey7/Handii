@@ -27,7 +27,7 @@ export default function Home() {
 
         {/* Glassmorphic Navigation Cards */}
         <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-8 px-4 pb-16">
-          <Link href="/user">
+          <Link href="/user" className="block w-full h-full">
             <div className="group relative h-full bg-zinc-900/60 backdrop-blur-xl rounded-3xl p-8 border border-zinc-800 hover:border-orange-500/50 hover:bg-zinc-800/80 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl group-hover:bg-orange-500/20 transition-all"></div>
 
@@ -41,7 +41,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link href="/worker">
+          <Link href="/worker" className="block w-full h-full">
             <div className="group relative h-full bg-zinc-900/60 backdrop-blur-xl rounded-3xl p-8 border border-zinc-800 hover:border-orange-500/50 hover:bg-zinc-800/80 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-zinc-500/10 rounded-full blur-3xl group-hover:bg-zinc-500/20 transition-all"></div>
 
@@ -55,7 +55,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link href="/admin">
+          <Link href="/admin" className="block w-full h-full">
             <div className="group relative h-full bg-zinc-900/60 backdrop-blur-xl rounded-3xl p-8 border border-zinc-800 hover:border-orange-500/50 hover:bg-zinc-800/80 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-neutral-500/10 rounded-full blur-3xl group-hover:bg-neutral-500/20 transition-all"></div>
 

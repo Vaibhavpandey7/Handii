@@ -3,7 +3,8 @@ const Worker = require('./models/Worker');
 
 async function seed() {
   try {
-      await mongoose.connect("mongodb://127.0.0.1:27017/urban_services");
+      const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/urban_services";
+      await mongoose.connect(MONGO_URI);
 
     await Worker.deleteMany({});
 
