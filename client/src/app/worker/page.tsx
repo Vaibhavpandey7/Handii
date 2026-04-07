@@ -82,14 +82,21 @@ export default function WorkerRegistration() {
                 <label className="block text-sm font-bold text-zinc-100 mb-2 tracking-wide uppercase">Service Type</label>
                 <div className="relative">
                   <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-500" size={18} />
-                  <input 
+                  <select 
                     required
-                    type="text" 
                     value={formData.service_type}
                     onChange={e => setFormData({...formData, service_type: e.target.value})}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-zinc-800/30 border border-zinc-800 outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition text-zinc-100 placeholder:text-zinc-500"
-                    placeholder="e.g. Plumber, Electrician"
-                  />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-zinc-800/30 border border-zinc-800 outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition text-zinc-100 appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled className="text-zinc-500">Select a Profession</option>
+                    <option value="Plumber" className="bg-zinc-900">Plumber</option>
+                    <option value="Electrician" className="bg-zinc-900">Electrician</option>
+                    <option value="Carpenter" className="bg-zinc-900">Carpenter</option>
+                    <option value="Painter" className="bg-zinc-900">Painter</option>
+                    <option value="AC Technician" className="bg-zinc-900">AC Technician</option>
+                    <option value="Cleaner" className="bg-zinc-900">Cleaner</option>
+                    <option value="Mechanic" className="bg-zinc-900">Mechanic</option>
+                  </select>
                 </div>
               </div>
 
