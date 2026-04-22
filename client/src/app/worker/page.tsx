@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, User, MapPin, Briefcase } from "lucide-react";
 
 export default function WorkerRegistration() {
   const router = useRouter();
+  const { token } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     service_type: "",
@@ -18,11 +20,19 @@ export default function WorkerRegistration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+    
     setSubmitting(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/workers`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(formData)
       });
       if (res.ok) {

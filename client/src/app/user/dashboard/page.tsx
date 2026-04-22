@@ -3,18 +3,23 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, Clock, CheckCircle, Navigation, MessageCircle, Briefcase, Calendar } from "lucide-react";
 
 export default function UserDashboard() {
   const router = useRouter();
+  const { token } = useAuth();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const userId = "mock-user-123";
 
   useEffect(() => {
+    if (!token) return;
+    
     const fetchBookings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/bookings/user/${userId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/bookings/user/me`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
         const data = await res.json();
         setBookings(data);
       } catch (err) {
@@ -23,7 +28,7 @@ export default function UserDashboard() {
       setLoading(false);
     };
     fetchBookings();
-  }, []);
+  }, [token]);
 
   const getStatusColor = (status: string) => {
     switch(status) {

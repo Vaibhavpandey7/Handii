@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, User, MapPin, Briefcase, Star, MessageCircle, CheckCircle } from "lucide-react";
 
 export default function WorkerDetails() {
   const router = useRouter();
   const params = useParams();
+  const { token } = useAuth();
   const [worker, setWorker] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
@@ -27,19 +29,30 @@ export default function WorkerDetails() {
   }, [params.id]);
 
   const handleBook = async () => {
+    if (!token) {
+      router.push('/login');
+      return;
+    }
     setBooking(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: "mock-user-123", workerId: worker._id })
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ workerId: worker._id })
       });
       const data = await res.json();
-      router.push(`/user/chat/${data._id}`);
+      if (res.ok) {
+        router.push(`/user/chat/${data._id}`);
+      } else {
+        alert(data.error || "Booking failed");
+      }
     } catch (err) {
       console.error(err);
-      setBooking(false);
     }
+    setBooking(false);
   };
 
   if (loading) return (

@@ -7,7 +7,7 @@ const messageSchema = new mongoose.Schema({
 });
 
 const bookingSchema = new mongoose.Schema({
-  userId: { type: String, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   workerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Worker', required: true },
   status: { type: String, enum: ['Pending', 'Confirmed', 'Completed'], default: 'Pending' },
   messages: [messageSchema],

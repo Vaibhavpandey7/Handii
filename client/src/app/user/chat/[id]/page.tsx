@@ -2,25 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, Send } from "lucide-react";
 
 export default function BookingChat() {
   const router = useRouter();
   const params = useParams();
+  const { token } = useAuth();
   const [booking, setBooking] = useState<any>(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!token) return;
     fetchBooking();
-    // Simple polling for a mock prototype
     const interval = setInterval(fetchBooking, 3000);
     return () => clearInterval(interval);
-  }, [params.id]);
+  }, [params.id, token]);
 
   const fetchBooking = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/bookings/${params.id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/bookings/${params.id}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
       const data = await res.json();
       setBooking(data);
       setLoading(false);
@@ -40,8 +44,11 @@ export default function BookingChat() {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/bookings/${params.id}/messages`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sender: "User", text: prevText })
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ text: prevText })
       });
       fetchBooking(); // update immediately
     } catch (err) {
