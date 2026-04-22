@@ -91,7 +91,7 @@ export default function Home() {
             </Link>
           )}
 
-          {(!user || user.role === 'admin') && (
+          {user?.role === 'admin' && (
             <Link href="/admin" className="block w-full h-full">
               <div className="group relative h-full bg-zinc-900/60 backdrop-blur-xl rounded-3xl p-8 border border-zinc-800 hover:border-neutral-500/50 hover:bg-zinc-800/80 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-neutral-500/10 rounded-full blur-3xl group-hover:bg-neutral-500/20 transition-all"></div>
