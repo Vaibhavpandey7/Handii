@@ -112,6 +112,48 @@ app.get("/api/bookings/:id", async (req, res) => {
   }
 });
 
+// Get all bookings for a user
+app.get("/api/bookings/user/:userId", async (req, res) => {
+  try {
+    const bookings = await Booking.find({ userId: req.params.userId }).populate('workerId').sort({ createdAt: -1 });
+    res.json(bookings);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Get all bookings for a worker
+app.get("/api/bookings/worker/:workerId", async (req, res) => {
+  try {
+    const bookings = await Booking.find({ workerId: req.params.workerId }).sort({ createdAt: -1 });
+    res.json(bookings);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Update booking status
+app.patch("/api/bookings/:id/status", async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['Pending', 'Confirmed', 'Completed'].includes(status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+    const booking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).populate('workerId');
+    if (!booking) return res.status(404).json({ error: "Booking not found" });
+    res.json(booking);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Add message to booking
 app.post("/api/bookings/:id/messages", async (req, res) => {
   try {
