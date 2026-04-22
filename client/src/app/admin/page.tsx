@@ -3,15 +3,22 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, CheckCircle, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { user, token, loading: authLoading } = useAuth();
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchWorkers();
-  }, []);
+    if (authLoading) return;
+    if (!user || user.role !== 'admin') {
+      router.push('/');
+    } else {
+      fetchWorkers();
+    }
+  }, [user, authLoading]);
 
   const fetchWorkers = async () => {
     setLoading(true);
@@ -27,7 +34,10 @@ export default function AdminDashboard() {
 
   const handleVerify = async (id: string) => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admin/workers/${id}/verify`, { method: "PATCH" });
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admin/workers/${id}/verify`, { 
+        method: "PATCH",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
       fetchWorkers(); // refresh list
     } catch (err) {
       console.error(err);
@@ -37,7 +47,10 @@ export default function AdminDashboard() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to remove this worker?")) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admin/workers/${id}`, { method: "DELETE" });
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admin/workers/${id}`, { 
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
       fetchWorkers();
     } catch (err) {
       console.error(err);

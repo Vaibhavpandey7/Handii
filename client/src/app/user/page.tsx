@@ -4,17 +4,24 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, MapPin, Search as SearchIcon, ArrowLeft, Briefcase, ChevronDown, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UserSearch() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [service, setService] = useState("");
   const [location, setLocation] = useState("");
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchWorkers("", "");
-  }, []);
+    if (authLoading) return;
+    if (!user) {
+      router.push('/login');
+    } else {
+      fetchWorkers("", "");
+    }
+  }, [user, authLoading]);
 
   const fetchWorkers = async (srv: string, loc: string) => {
     setLoading(true);
