@@ -10,6 +10,12 @@ export default function Home() {
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-orange-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-[float_6s_ease-in-out_infinite]"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-zinc-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-[float_8s_ease-in-out_infinite_reverse]"></div>
 
+      {/* Top Navigation */}
+      <nav className="absolute top-0 w-full p-6 flex justify-end gap-4 z-20">
+        <Link href="/user/dashboard" className="text-sm font-bold text-zinc-300 hover:text-orange-500 bg-zinc-900/50 px-5 py-2.5 rounded-full border border-zinc-800 transition hover:border-orange-500/50 backdrop-blur-md">User Dashboard</Link>
+        <Link href="/worker/dashboard" className="text-sm font-bold text-zinc-300 hover:text-emerald-500 bg-zinc-900/50 px-5 py-2.5 rounded-full border border-zinc-800 transition hover:border-emerald-500/50 backdrop-blur-md">Worker Dashboard</Link>
+      </nav>
+
       {/* Main Content Node */}
       <div className="flex-1 flex flex-col justify-center items-center text-center p-6 relative z-10 w-full">
 
