@@ -57,7 +57,7 @@ export default function Home() {
         </div>
 
         {/* Glassmorphic Navigation Cards */}
-        <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-8 px-4 pb-16">
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 px-4 pb-16 mx-auto">
           
           {(!user || user.role === 'user') && (
             <Link href="/user" className="block w-full h-full">
