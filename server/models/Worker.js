@@ -9,7 +9,7 @@ const workerSchema = new mongoose.Schema({
   phone: { type: String, default: "Not available" },
   experience: { type: Number, default: 0 },
   availability: { type: Boolean, default: false },
-  verified: { type: Boolean, default: true }
+  verified: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model("Worker", workerSchema);
