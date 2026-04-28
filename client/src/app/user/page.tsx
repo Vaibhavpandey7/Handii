@@ -16,12 +16,8 @@ export default function UserSearch() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
-      router.push('/login');
-    } else {
-      fetchWorkers("", "");
-    }
-  }, [user, authLoading]);
+    fetchWorkers("", "");
+  }, [authLoading]);
 
   const fetchWorkers = async (srv: string, loc: string) => {
     setLoading(true);
