@@ -57,7 +57,7 @@ export default function Login() {
         
         if (shouldRedirectNormal) {
           if (data.user.role === 'worker') router.push('/worker/dashboard');
-          else if (data.user.role === 'admin') router.push('/');
+          else if (data.user.role === 'admin') router.push('/admin');
           else router.push('/user/dashboard');
         }
       }

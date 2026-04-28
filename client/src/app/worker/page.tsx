@@ -37,7 +37,7 @@ export default function WorkerRegistration() {
       });
       if (res.ok) {
         setSuccess(true);
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push('/worker/dashboard'), 3000);
       }
     } catch (err) {
       console.error(err);

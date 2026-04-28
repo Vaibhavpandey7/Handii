@@ -145,7 +145,7 @@ export default function WorkerDashboard() {
                     </button>
                   )}
                   <Link href={`/worker/chat/${booking._id}`} className="flex-1 md:flex-none flex items-center justify-center px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-bold text-sm rounded-xl transition border border-zinc-700 hover:border-transparent">
-                    <MessageCircle size={16} className="mr-2" /> Comm
+                    <MessageCircle size={16} className="mr-2" /> Chat
                   </Link>
                 </div>
               </div>

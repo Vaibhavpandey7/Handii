@@ -30,7 +30,7 @@ export default function Register() {
         setError(data.error || "Registration failed");
       } else {
         login(data.token, data.user);
-        router.push(data.user.role === 'worker' ? '/worker/dashboard' : '/user/dashboard');
+        router.push(data.user.role === 'worker' ? '/worker' : '/user/dashboard');
       }
     } catch (err) {
       setError("An unexpected error occurred.");
