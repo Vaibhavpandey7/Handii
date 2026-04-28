@@ -60,7 +60,7 @@ export default function UserDashboard() {
 
         <div className="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 md:p-12 shadow-2xl mb-12 flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-extrabold text-zinc-100 mb-2 tracking-tight">Command Center</h1>
+            <h1 className="text-4xl font-extrabold text-zinc-100 mb-2 tracking-tight">User Bookings</h1>
             <p className="text-zinc-400 max-w-2xl">Manage your service requests, track active personnel, and review completed missions.</p>
           </div>
           <div className="hidden md:flex flex-col items-center justify-center p-4 bg-orange-500/10 border border-orange-500/20 rounded-2xl">

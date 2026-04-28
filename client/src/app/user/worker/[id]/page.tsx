@@ -30,7 +30,7 @@ export default function WorkerDetails() {
 
   const handleBook = async () => {
     if (!token) {
-      router.push('/login');
+      router.push(`/login?book=${worker._id}`);
       return;
     }
     setBooking(true);
@@ -45,7 +45,7 @@ export default function WorkerDetails() {
       });
       const data = await res.json();
       if (res.ok) {
-        router.push(`/user/chat/${data._id}`);
+        router.push(`/user/dashboard`);
       } else {
         alert(data.error || "Booking failed");
       }

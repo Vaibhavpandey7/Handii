@@ -3,12 +3,28 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const http = require("http");
+const { Server } = require("socket.io");
 const User = require("./models/User");
 const Worker = require("./models/Worker");
 const Booking = require("./models/Booking");
 const { verifyToken, verifyRole, JWT_SECRET } = require("./middleware/auth");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "DELETE"]
+  }
+});
+
+io.on("connection", (socket) => {
+  socket.on("join_room", (bookingId) => {
+    socket.join(bookingId);
+  });
+});
+
 app.use(express.json());
 app.use(cors());
 
@@ -156,7 +172,7 @@ app.post("/api/bookings", verifyToken, verifyRole(['user']), async (req, res) =>
 // Get booking with messages
 app.get("/api/bookings/:id", verifyToken, async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate('workerId');
+    const booking = await Booking.findById(req.params.id).populate('workerId').populate('userId');
     if (!booking) return res.status(404).json({ error: "Booking not found" });
     res.json(booking);
   } catch (err) {
@@ -183,7 +199,7 @@ app.get("/api/bookings/worker/me", verifyToken, verifyRole(['worker', 'admin']),
     const workerProfile = await Worker.findOne({ userId: req.user.id });
     if (!workerProfile) return res.status(404).json({ error: "Worker profile not found for this account." });
 
-    const bookings = await Booking.find({ workerId: workerProfile._id }).sort({ createdAt: -1 });
+    const bookings = await Booking.find({ workerId: workerProfile._id }).populate('userId').sort({ createdAt: -1 });
     res.json(bookings);
   } catch (err) {
     console.error(err);
@@ -225,6 +241,11 @@ app.post("/api/bookings/:id/messages", verifyToken, async (req, res) => {
 
     booking.messages.push({ sender, text });
     await booking.save();
+    
+    // Broadcast the new message to the room
+    const newMessage = booking.messages[booking.messages.length - 1];
+    io.to(req.params.id).emit("receive_message", newMessage);
+    
     res.status(201).json(booking);
   } catch (err) {
     console.error(err);
@@ -240,4 +261,4 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error(err));
 
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

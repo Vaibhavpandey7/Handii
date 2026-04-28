@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, Send } from "lucide-react";
+import { io } from "socket.io-client";
 
 export default function BookingChat() {
   const router = useRouter();
@@ -16,8 +17,29 @@ export default function BookingChat() {
   useEffect(() => {
     if (!token) return;
     fetchBooking();
-    const interval = setInterval(fetchBooking, 3000);
-    return () => clearInterval(interval);
+    
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
+    socket.emit("join_room", params.id);
+    
+    socket.on("receive_message", (message) => {
+      setBooking((prev: any) => {
+        if (!prev) return prev;
+        // Avoid duplicate messages if optimistic update already added it
+        const isDuplicate = prev.messages.some((msg: any) => 
+          msg.text === message.text && msg.sender === message.sender && new Date(msg.timestamp).getTime() - new Date(message.timestamp).getTime() < 2000
+        );
+        if (isDuplicate) return prev;
+        
+        return {
+          ...prev,
+          messages: [...prev.messages, message]
+        };
+      });
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, [params.id, token]);
 
   const fetchBooking = async () => {
@@ -50,7 +72,8 @@ export default function BookingChat() {
         },
         body: JSON.stringify({ text: prevText })
       });
-      fetchBooking(); // update immediately
+      // We don't need to fetchBooking() immediately because the socket will broadcast it back.
+      // But we already did an optimistic UI update.
     } catch (err) {
       console.error(err);
     }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, Send } from "lucide-react";
+import { io } from "socket.io-client";
 
 export default function WorkerBookingChat() {
   const router = useRouter();
@@ -16,8 +17,28 @@ export default function WorkerBookingChat() {
   useEffect(() => {
     if (!token) return;
     fetchBooking();
-    const interval = setInterval(fetchBooking, 3000);
-    return () => clearInterval(interval);
+    
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
+    socket.emit("join_room", params.id);
+    
+    socket.on("receive_message", (message) => {
+      setBooking((prev: any) => {
+        if (!prev) return prev;
+        const isDuplicate = prev.messages.some((msg: any) => 
+          msg.text === message.text && msg.sender === message.sender && new Date(msg.timestamp).getTime() - new Date(message.timestamp).getTime() < 2000
+        );
+        if (isDuplicate) return prev;
+        
+        return {
+          ...prev,
+          messages: [...prev.messages, message]
+        };
+      });
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, [params.id, token]);
 
   const fetchBooking = async () => {
@@ -50,7 +71,8 @@ export default function WorkerBookingChat() {
         },
         body: JSON.stringify({ text: prevText })
       });
-      fetchBooking(); // update immediately
+      // We don't need to fetchBooking() immediately because the socket will broadcast it back.
+      // But we already did an optimistic UI update.
     } catch (err) {
       console.error(err);
     }
@@ -73,7 +95,7 @@ export default function WorkerBookingChat() {
           </button>
           <div className="bg-zinc-900/60 backdrop-blur-xl px-6 py-4 rounded-2xl shadow-2xl border border-zinc-800 flex-1 flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold text-zinc-100">Comm Link: {booking?.userId}</h1>
+              <h1 className="text-xl font-bold text-zinc-100">Comm Link: {booking?.userId?.name || 'Unknown User'}</h1>
               <p className="text-sm text-emerald-500 font-bold uppercase tracking-wider mt-1">Client Connection Established</p>
             </div>
             <div className={`px-4 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider border ${

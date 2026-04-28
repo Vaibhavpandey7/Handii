@@ -30,9 +30,36 @@ export default function Login() {
         setError(data.error || "Login failed");
       } else {
         login(data.token, data.user);
-        if (data.user.role === 'worker') router.push('/worker/dashboard');
-        else if (data.user.role === 'admin') router.push('/');
-        else router.push('/user/dashboard');
+        
+        let shouldRedirectNormal = true;
+        
+        if (typeof window !== 'undefined') {
+          const searchParams = new URL(window.location.href).searchParams;
+          const bookId = searchParams.get('book');
+          
+          if (bookId && data.user.role !== 'worker' && data.user.role !== 'admin') {
+            shouldRedirectNormal = false;
+            try {
+              await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/bookings`, {
+                method: "POST",
+                headers: { 
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${data.token}`
+                },
+                body: JSON.stringify({ workerId: bookId })
+              });
+            } catch (err) {
+              console.error("Auto-booking failed", err);
+            }
+            router.push('/user/dashboard');
+          }
+        }
+        
+        if (shouldRedirectNormal) {
+          if (data.user.role === 'worker') router.push('/worker/dashboard');
+          else if (data.user.role === 'admin') router.push('/');
+          else router.push('/user/dashboard');
+        }
       }
     } catch (err) {
       setError("An unexpected error occurred.");
